@@ -2,9 +2,11 @@ import logging
 import requests
 import os
 from fastmcp import FastMCP
+from dotenv import load_dotenv
+load_dotenv()
 
 OMBI_API_KEY = os.getenv("OMBI_API_KEY")
-OMBI_URL = os.getenv("OMBI_URL", "http://localhost:5379")
+OMBI_URL = os.getenv("OMBI_URL", "http://localhost:3579")
 MCP_PORT = int(os.getenv("MCP_PORT", "7979"))
 MCP_HOST = os.getenv("MCP_HOST", "localhost")
 
@@ -68,7 +70,7 @@ def get_issues() -> dict | list:
     ]
 
 @mcp.tool()
-def set_issue_status(issue_id: int, status: int) -> dict:
+def set_issue_status(issue_id: int, status: int) -> dict | bool:
     """Update the status of a specific issue. 0 for new, 1 for in progress, 2 for completed."""
     logging.info("Updating status of issue ID %d to %d...", issue_id, status)
     payload = {"status": status, "issueId": issue_id}
