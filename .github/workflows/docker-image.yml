@@ -28,5 +28,5 @@ jobs:
         docker build . --file Dockerfile --tag ${{env.REGISTRY}}:${{steps.tag.outputs.version}} --tag ${{env.REGISTRY}}:latest
     - name: Push
       run: |
-        # docker push ${{env.REGISTRY}}:latest
+        docker push ${{env.REGISTRY}}:latest
         docker push ${{env.REGISTRY}}:${{steps.tag.outputs.version}}
