@@ -20,7 +20,7 @@ if not OMBI_API_KEY:
 
 mcp = FastMCP()
 
-def _make_api_request(endpoint: str, method: str = "GET", **kwargs) -> dict | list:
+def _make_api_request(endpoint: str, method: str = "GET", **kwargs) -> dict:
     """Make API request with consistent error handling."""
     try:
         response = requests.request(
@@ -35,7 +35,7 @@ def _make_api_request(endpoint: str, method: str = "GET", **kwargs) -> dict | li
         return response.json()
     
     except requests.exceptions.RequestException as e:
-        error_msg = f"API request failed: {e.response.status_code} {e.response.reason}" if hasattr(e, 'response') and e.response is not None else f"API request failed: {str(e)}"
+        error_msg = f"API request failed: {str(e)}"
         logging.error(error_msg)
         return {"error": error_msg}
 
@@ -50,10 +50,6 @@ def get_issues() -> dict | list:
     """Fetch all issues from Ombi."""
     logging.info("Fetching issues from Ombi...")
     response = _make_api_request("Issues")
-    
-    # Handle error responses
-    if isinstance(response, dict) and "error" in response:
-        return response
     
     logging.info("Found %d issues.", len(response) if isinstance(response, list) else 0)
     # Map status codes to readable descriptions
@@ -77,8 +73,6 @@ def set_issue_status(issue_id: int, status: int) -> dict:
     logging.info("Updating status of issue ID %d to %d...", issue_id, status)
     payload = {"status": status, "issueId": issue_id}
     response = _make_api_request(f"Issues/status", method="POST", json=payload)
-    if "error" not in response:
-        logging.info("Issue ID %d status updated successfully.", issue_id)
     return response
 
 # @mcp.tool() Comments are currently not supported in Ombi API v1
@@ -87,8 +81,6 @@ def add_issue_comment(issue_id: int, comment: str) -> dict:
     logging.info("Adding comment to issue ID %d...", issue_id)
     payload = {"issueId": issue_id, "comment": comment}
     response = _make_api_request(f"Issues/comments", method="POST", json=payload)
-    if "error" not in response:
-        logging.info("Comment added to issue ID %d successfully.", issue_id)
     return response
 
 
