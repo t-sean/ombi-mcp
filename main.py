@@ -29,12 +29,11 @@ def _make_api_request(endpoint: str, method: str = "GET", **kwargs) -> dict | li
             headers={"ApiKey": OMBI_API_KEY},
             **kwargs
         )
-        
         # Handle empty responses (e.g., DELETE returning 200/204)
         if response.status_code == 204 or not response.content:
             return {"success": True}
-        
         return response.json()
+    
     except requests.exceptions.RequestException as e:
         error_msg = f"API request failed: {e.response.status_code} {e.response.reason}" if hasattr(e, 'response') and e.response is not None else f"API request failed: {str(e)}"
         logging.error(error_msg)
@@ -82,7 +81,7 @@ def set_issue_status(issue_id: int, status: int) -> dict:
         logging.info("Issue ID %d status updated successfully.", issue_id)
     return response
 
-@mcp.tool()
+# @mcp.tool() Comments are currently not supported in Ombi API v1
 def add_issue_comment(issue_id: int, comment: str) -> dict:
     """Add a comment to a specific issue."""
     logging.info("Adding comment to issue ID %d...", issue_id)
